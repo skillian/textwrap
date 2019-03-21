@@ -78,13 +78,6 @@ positional arguments:
 	}
 }
 
-func getFile(name string, opener func(name string) (*os.File, error), fallback *os.File) (io.ReadCloser, error) {
-	if name == "" || name == "-" {
-		return fallback, nil
-	}
-	return opener(name)
-}
-
 func logClose(c io.Closer) {
 	if err := c.Close(); err != nil {
 		log.Fatal(err)
