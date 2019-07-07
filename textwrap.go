@@ -5,7 +5,48 @@ import (
 	"errors"
 	"io"
 	"io/ioutil"
+	"strings"
 )
+
+// SliceLines receives a slice of individual values that are wrapped into a
+// slice of lines.
+func SliceLines(vs []string, columns int, separator string) []string {
+	lines := make([][]string, 1, len(vs))
+	c := 0
+	for _, v := range vs {
+		length := len(v) + len(separator)
+		if length+c > columns {
+			lines = append(lines, []string{v})
+			c = length
+		} else {
+			line := &lines[len(lines)-1]
+			*line = append(*line, v)
+			c += length
+		}
+	}
+	out := make([]string, len(lines))
+	for i, line := range lines {
+		out[i] = strings.Join(line, separator)
+	}
+	return out
+}
+
+// Slice wraps the given slice of string values.  The values cannot be broken
+// across lines even if they contain spaces.
+func Slice(vs []string, columns int) string {
+	b := strings.Builder{}
+	c := 0
+	for _, v := range vs {
+		length := len(v)
+		c += length
+		if c > columns {
+			b.WriteRune('\n')
+			c = length
+		}
+		b.WriteString(v)
+	}
+	return b.String()
+}
 
 // String wraps a string to the given number of columns
 func String(v string, columns int) string {

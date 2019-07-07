@@ -1,6 +1,7 @@
 package textwrap_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/skillian/textwrap"
@@ -27,4 +28,26 @@ func TestString(t *testing.T) {
 	} else {
 		t.Log("OK")
 	}
+}
+
+func TestSliceLines(t *testing.T) {
+	t.Parallel()
+
+	expected := strings.Split(wrapped, "\n")
+
+	result := textwrap.SliceLines(strings.Split(unwrapped, " "), 80, " ")
+
+	if len(result) != len(expected) {
+		t.Fatal("Expected", len(expected), "lines but got", len(result), "lines")
+	}
+
+	for i, v := range expected {
+		if v != result[i] {
+			t.Fatalf(
+				"Line %d:  Expected:\n\n\t\t%s\n\n\tbut "+
+					"found:\n\n\t\t%s",
+				i+1, v, result[i])
+		}
+	}
+
 }
